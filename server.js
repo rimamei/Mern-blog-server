@@ -1,7 +1,13 @@
 const express = require("express");
-const productRoutes = require("./routes/products");
-const app = express();
 const cors = require("cors");
+var bodyParser = require("body-parser");
+const authRoutes = require("./routes/auth");
+const blogRoutes = require("./routes/blog");
+
+const app = express();
+
+// parse application/json
+app.use(bodyParser.json());
 
 // Adding CORS
 // app.use((req, res, next) => {
@@ -16,6 +22,11 @@ const cors = require("cors");
 
 app.use(cors());
 
-app.use("/v1/customer", productRoutes);
+app.use("/v1/auth", authRoutes);
+app.use("/v1/blog", blogRoutes);
+
+app.use((error, req, res, next) => {
+  res.status(400).json({ message: "Error", data: "data disini" });
+});
 
 app.listen(4000);
