@@ -3,6 +3,7 @@ const cors = require("cors");
 var bodyParser = require("body-parser");
 const authRoutes = require("./routes/auth");
 const blogRoutes = require("./routes/blog");
+const mongoose = require("mongoose");
 
 const app = express();
 
@@ -26,7 +27,16 @@ app.use("/v1/auth", authRoutes);
 app.use("/v1/blog", blogRoutes);
 
 app.use((error, req, res, next) => {
-  res.status(400).json({ message: "Error", data: "data disini" });
+  const status = error.errorStatus || 500;
+  const message = error.message;
+  const data = error.data;
+
+  res.status(status).json({ message: message, data: data });
 });
 
-app.listen(4000);
+mongoose
+  .connect("mongodb://localhost:27017/test")
+  .then(() => {
+    app.listen(4000, () => console.log("connection success"));
+  })
+  .catch((err) => console.log(err));
