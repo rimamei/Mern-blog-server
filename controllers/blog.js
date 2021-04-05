@@ -5,8 +5,8 @@ exports.createBlog = (req, res, next) => {
 
   const errors = validationResult(req, res, next);
   if (!errors.isEmpty()) {
-    console.log(errors);
-    res.status(400).json({ message: "Request error", data: null });
+    const err = new Error("Invalid Value");
+    throw err;
   }
 
   const result = {
