@@ -1,12 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-var bodyParser = require('body-parser');
-const authRoutes = require('./src/routes/auth');
-const blogRoutes = require('./src/routes/blog');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const path = require('path');
-const { fileStorage, fileFilter } = require('./src/helper/multer');
+import authRoutes from './src/routes/auth';
+import blogRoutes from './src/routes/blog';
+import express from 'express';
+import path from 'path';
+import multer from 'multer';
+import mongoose from 'mongoose';
+import { fileStorage, fileFilter } from './src/helper/multer';
+import cors from 'cors';
 
 const app = express();
 
@@ -31,22 +30,11 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-app.use((err, req, res, next) => {
-  if (err && err.name === 'UnauthorizedError') {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Missing authorization credentials',
-    });
-  } else if (err && err?.errorCode) {
-    res.status(err.errorCode).json(err.message);
-  } else if (err) {
-    res.status(500).json(err.message);
-  }
-});
-
 mongoose
-  .connect('mongodb://localhost:27017/test')
+  .connect(process.env.DATABASE_URI || 'mongodb://localhost:27017/test')
   .then(() => {
-    app.listen(4000, () => console.log('connection success'));
+    console.log('connection success');
   })
   .catch((err) => console.log(err));
+
+app.listen(process.env.PORT || 4000);

@@ -18,3 +18,12 @@ export const fileFilter = (req, file, cb) => {
     cb(null, false);
   }
 };
+
+export const removeImage = (filepath) => {
+  console.log('filepath: ', filepath);
+  console.log('dir name: ', __dirname);
+
+  filepath = path.join(__dirname, '../..', filepath);
+  console.log(filepath);
+  fs.unlink(filepath, (err) => console.log(err));
+};
