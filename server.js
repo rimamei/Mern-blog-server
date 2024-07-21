@@ -6,11 +6,9 @@ import multer from 'multer';
 import mongoose from 'mongoose';
 import { fileStorage, fileFilter } from './src/helper/multer.js';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { connection } from './src/helper/db.js';
-
-dotenv.config();
+import { config } from './src/config/index.js';
 
 const app = express();
 
@@ -41,8 +39,10 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
+// connection to database
 connection();
 
+// Server listening
 app.listen(process.env.PORT || 4000, () => {
-  console.log(`Server is running on ${process.env.PORT || 4000}`);
+  console.log(`Server is running on ${config.PORT || 4000}`);
 });

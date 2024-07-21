@@ -1,11 +1,11 @@
+import { config } from '../config/index.js';
 const mongoose = await import('mongoose');
-const dotenv = await import('dotenv');
-dotenv.config();
 
+// Function to connect to the database
 export const connection = async () => {
   try {
     await mongoose.connect(
-      process.env.DATABASE_URI || 'mongodb://localhost:27017/test'
+      config.DATABASE_URI || 'mongodb://localhost:27017/test'
     );
     console.log('connection success');
   } catch (error) {
