@@ -1,16 +1,26 @@
-import authRoutes from './src/routes/auth';
-import blogRoutes from './src/routes/blog';
+import authRoutes from './src/routes/auth.js';
+import blogRoutes from './src/routes/blog.js';
 import express from 'express';
 import path from 'path';
 import multer from 'multer';
 import mongoose from 'mongoose';
-import { fileStorage, fileFilter } from './src/helper/multer';
+import { fileStorage, fileFilter } from './src/helper/multer.js';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+
+dotenv.config();
 
 const app = express();
 
+// Define __dirname using import.meta.url
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // parse application/json
 app.use(express.json());
+
+// image path
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
@@ -37,4 +47,6 @@ mongoose
   })
   .catch((err) => console.log(err));
 
-app.listen(process.env.PORT || 4000);
+app.listen(process.env.PORT || 4000, () => {
+  console.log(`Server is running on ${process.env.PORT || 4000}`);
+});

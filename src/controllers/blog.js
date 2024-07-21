@@ -1,8 +1,8 @@
 import { validationResult } from 'express-validator';
 import path from 'path';
 import fs from 'fs';
-import BlogPost from '../models/blog';
-import { removeImage } from '../helper/multer';
+import BlogPost from '../models/blog.js';
+import { removeImage } from '../helper/multer.js';
 
 export const createBlog = (req, res, next) => {
   const errors = validationResult(req, res, next);

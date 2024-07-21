@@ -1,3 +1,5 @@
+import multer from 'multer';
+
 export const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'images');

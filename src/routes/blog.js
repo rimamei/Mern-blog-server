@@ -1,6 +1,12 @@
 import express from 'express';
 import { body } from 'express-validator';
-import blogController from '../controllers/blog';
+import {
+  createBlog,
+  deleteBlog,
+  getAllBlog,
+  getBlogById,
+  updateBlog,
+} from '../controllers/blog.js';
 
 const router = express.Router();
 
@@ -11,19 +17,19 @@ router.post(
     body('title').isLength({ min: 5 }).withMessage('Title kurang dari 5 huruf'),
     body('body').isLength({ min: 5 }).withMessage('Body kurang dari 5 huruf'),
   ],
-  blogController.createBlog
+  createBlog
 );
 
-router.get('/post', blogController.getAllBlog);
-router.get('/post/:postId', blogController.getBlogById);
+router.get('/post', getAllBlog);
+router.get('/post/:postId', getBlogById);
 router.put(
   '/post/:postId',
   [
     body('title').isLength({ min: 5 }).withMessage('Title kurang dari 5 huruf'),
     body('body').isLength({ min: 5 }).withMessage('Body kurang dari 5 huruf'),
   ],
-  blogController.updateBlog
+  updateBlog
 );
-router.delete('/post/:postId', blogController.deleteBlog);
+router.delete('/post/:postId', deleteBlog);
 
 export default router;
