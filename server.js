@@ -8,6 +8,7 @@ import { fileStorage, fileFilter } from './src/helper/multer.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
+import { connection } from './src/helper/db.js';
 
 dotenv.config();
 
@@ -40,12 +41,7 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-mongoose
-  .connect(process.env.DATABASE_URI || 'mongodb://localhost:27017/test')
-  .then(() => {
-    console.log('connection success');
-  })
-  .catch((err) => console.log(err));
+connection();
 
 app.listen(process.env.PORT || 4000, () => {
   console.log(`Server is running on ${process.env.PORT || 4000}`);
