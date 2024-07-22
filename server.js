@@ -9,6 +9,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { connection } from './src/helper/db.js';
 import { config } from './src/config/index.js';
+import { response } from './src/utils/response.js';
 
 const app = express();
 
@@ -31,12 +32,13 @@ app.use(cors());
 app.use('/v1/auth', authRoutes);
 app.use('/v1/blog', blogRoutes);
 
+// Error handling
 app.use((error, req, res, next) => {
   const status = error.errorStatus || 500;
   const message = error.message;
   const data = error.data;
 
-  res.status(status).json({ message: message, data: data });
+  response(res, data, status, message);
 });
 
 // connection to database
