@@ -11,6 +11,6 @@ export const generateToken = (user) => {
   };
 
   return jwt.sign(data, config.JWT_ACCESS_SECRET, {
-    expiresIn: '2d',
+    expiresIn: config.JWT_EXPIRES_IN,
   });
 };
