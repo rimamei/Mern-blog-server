@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
+
 const Schema = mongoose.Schema;
 
 const BlogPostSchema = new Schema(
@@ -7,7 +8,7 @@ const BlogPostSchema = new Schema(
       type: String,
       required: true,
     },
-    body: {
+    content: {
       type: String,
       required: true,
     },
@@ -16,14 +17,13 @@ const BlogPostSchema = new Schema(
       required: true,
     },
     author: {
-      type: Object,
-      required: true,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   {
-    // Created_at otomatis
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("BlogPost", BlogPostSchema);
+export default mongoose.model('BlogPost', BlogPostSchema);
