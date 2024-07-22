@@ -1,134 +1,169 @@
 import { validationResult } from 'express-validator';
-import path from 'path';
-import fs from 'fs';
 import BlogPost from '../models/blog.js';
 import { removeImage } from '../helper/multer.js';
+import { response } from '../utils/response.js';
 
-export const createBlog = (req, res, next) => {
-  const errors = validationResult(req, res, next);
-  if (!errors.isEmpty()) {
-    const err = new Error('Invalid Value');
-    err.status = 400;
-    err.data = errors.array();
-    throw err;
-  }
+export const createBlog = async (req, res, next) => {
+  try {
+    // Validate Request
+    const errors = validationResult(req, res, next);
 
-  if (!req.file) {
-    const err = new Error('Image harus di upload');
-    err.errorStatus = 422;
-    throw err;
-  }
+    // Check if there is an error on validation
+    if (!errors.isEmpty()) {
+      const err = new Error(errors.array()[0].msg);
+      err.status = 400;
+      err.data = null;
+      throw err;
+    }
 
-  const { title, body } = req.body;
-  console.log('Request file', req.file);
-  const image = req.file.path;
-  console.log(image);
+    // Check if there is no image uploaded
+    if (!req.file) {
+      const err = new Error('Image is required');
+      err.errorStatus = 422;
+      throw err;
+    }
 
-  const Posting = new BlogPost({
-    title: title,
-    body: body,
-    image: image,
-    author: { uid: 1, name: 'Rima' },
-  });
+    // Get title and content from request body
+    const { title, content } = req.body;
 
-  Posting.save()
-    .then((result) => {
-      res.status(201).json({
-        message: 'Create Blog Post Success',
-        data: result,
-      });
-    })
-    .catch((err) => console.log(err));
-};
+    // Get user from request
+    const user = req.user;
 
-export const getAllBlog = (req, res, next) => {
-  BlogPost.find()
-    .then((result) => {
-      res.status(200).json({
-        message: 'Data Blog Berhasil Di read',
-        data: result,
-      });
-    })
-    .catch((err) => {
-      next(err);
+    // Get image path from request file
+    const image = req.file.path;
+
+    // Create new BlogPost object
+    const Posting = new BlogPost({
+      title: title,
+      content: content,
+      image: image,
+      author: user._id,
     });
-};
 
-export const getBlogById = (req, res, next) => {
-  BlogPost.findById(req.params.postId)
-    .then((result) => {
-      if (!result) {
-        const error = new Error('Blog post tidak ditemukan');
-        error.errorStatus = 404;
-        throw error;
-      }
-      res
-        .status(200)
-        .json({ message: 'Data params berhasil dipanggil', data: result });
-    })
-    .catch((err) => next(err));
-};
+    // Save BlogPost object to database
+    const result = await Posting.save();
 
-export const updateBlog = (req, res, next) => {
-  const errors = validationResult(req, res, next);
-  if (!errors.isEmpty()) {
-    const err = new Error('Invalid Value');
-    err.status = 400;
-    err.data = errors.array();
-    throw err;
+    return response(res, result, 201, 'Blog Post has added successfully');
+  } catch (error) {
+    next(error);
   }
-
-  if (!req.file) {
-    const err = new Error('Image harus di upload');
-    err.errorStatus = 422;
-    throw err;
-  }
-
-  const { title, body } = req.body;
-  const image = req.file.path;
-  const postId = req.params.postId;
-
-  BlogPost.findById(postId)
-    .then((post) => {
-      if (!post) {
-        const err = new Error('');
-        throw err;
-      }
-
-      post.title = title;
-      post.body = body;
-      post.image = image;
-
-      return post.save();
-    })
-    .then((result) => {
-      res.status(200).json({ message: 'Update Sukses', data: result });
-    })
-    .catch((err) => {
-      next(err);
-    });
 };
 
-export const deleteBlog = (req, res, next) => {
-  const postId = req.params.postId;
+export const getAllBlog = async (req, res, next) => {
+  try {
+    // Get all blog post from database
+    const result = await BlogPost.find();
 
-  BlogPost.findById(postId)
-    .then((post) => {
-      if (!post) {
-        const error = new Error('Blog Post Tidak Ditemukan');
-        error.errorStatus = 404;
-        throw error;
-      }
+    // return response
+    return response(res, result, 200, 'Viewed successfully');
+  } catch (error) {
+    next(error);
+  }
+};
 
-      removeImage(post.image);
-      BlogPost.findByIdAndRemove(postId).then((result) =>
-        res.status(200).json({
-          message: 'Hapus blog berhasil',
-          data: result,
-        })
-      );
-    })
-    .catch((err) => {
-      next(err);
-    });
+export const getBlogById = async (req, res, next) => {
+  try {
+    // Get blog post by id from database
+    const result = await BlogPost.findById(req.params.postId);
+
+    // Check if blog post not found
+    if (!result) {
+      const error = new Error('Blog Post is not found');
+      error.errorStatus = 404;
+      throw error;
+    }
+
+    // return response
+    return response(res, result, 200, 'Viewed successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateBlog = async (req, res, next) => {
+  try {
+    // Validate Request
+    const errors = validationResult(req, res, next);
+
+    // Check if there is an error on validation
+    if (!errors.isEmpty()) {
+      const err = new Error(errors.array()[0].msg);
+      err.status = 400;
+      err.data = null;
+      throw err;
+    }
+
+    // Check if there is no image uploaded
+    if (!req.file) {
+      const err = new Error('Image is required');
+      err.errorStatus = 422;
+      throw err;
+    }
+
+    // Get title and content from request body
+    const { title, content } = req.body;
+
+    // Get image path from request file
+    const image = req.file.path;
+
+    // Get post id from request params
+    const postId = req.params.postId;
+
+    // Find post by id
+    const post = await BlogPost.findById(postId);
+
+    // Check if post not found
+    if (!post) {
+      const err = new Error('Blog Post is not found');
+      err.status = 400;
+      err.data = null;
+      throw err;
+    }
+
+    // Update post data
+    post.title = title;
+    post.content = content;
+    post.image = image;
+
+    // Save updated post data
+    const updatedPost = await post.save();
+
+    // return response
+    return response(
+      res,
+      updatedPost,
+      200,
+      'Blog Post has updated successfully'
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteBlog = async (req, res, next) => {
+  try {
+    // Get post id from request params
+    const postId = req.params.postId;
+
+    // Find post by id
+    const post = await BlogPost.findOne({ _id: postId });
+
+    // Check if post not found
+    if (!post) {
+      const error = new Error('Blog Post is not found');
+      error.errorStatus = 404;
+      throw error;
+    }
+
+    // Remove image from server
+    removeImage(post.image);
+
+    // Delete post by id
+    const result = await BlogPost.deleteOne({ _id: postId });
+
+    // return response
+    return response(res, 'OK', 200, 'Blog Post has deleted successfully');
+  } catch (error) {
+    next(error);
+  }
 };

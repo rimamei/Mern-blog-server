@@ -1,4 +1,7 @@
 import multer from 'multer';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
 
 export const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -21,11 +24,21 @@ export const fileFilter = (req, file, cb) => {
   }
 };
 
-export const removeImage = (filepath) => {
-  console.log('filepath: ', filepath);
-  console.log('dir name: ', __dirname);
+export const removeImage = (file) => {
+  // Helper to get the root directory
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const rootDir = path.resolve(__dirname, '../..');
 
-  filepath = path.join(__dirname, '../..', filepath);
-  console.log(filepath);
-  fs.unlink(filepath, (err) => console.log(err));
+  // Define file path
+  const filepath = path.join(rootDir, '', file);
+
+  // Remove image
+  fs.unlink(filepath, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Image deleted', filepath);
+    }
+  });
 };

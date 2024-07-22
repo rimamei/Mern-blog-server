@@ -8,7 +8,7 @@ const BlogPostSchema = new Schema(
       type: String,
       required: true,
     },
-    body: {
+    content: {
       type: String,
       required: true,
     },
@@ -17,12 +17,11 @@ const BlogPostSchema = new Schema(
       required: true,
     },
     author: {
-      type: Object,
-      required: true,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   {
-    // Created_at otomatis
     timestamps: true,
   }
 );
