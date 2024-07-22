@@ -2,9 +2,19 @@ import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 import { response } from '../utils/response.js';
 import { generateToken } from '../helper/jwt.js';
+import { validationResult } from 'express-validator';
 
 export const register = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      const err = new Error(errors?.array()[0]?.msg ?? 'Invalid Input');
+      err.status = 400;
+      err.data = null;
+      throw err;
+    }
+
     const { name, email, password, isVerified } = req.body;
 
     // Check if email already exist in db
@@ -39,6 +49,15 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      const err = new Error(errors?.array()[0]?.msg ?? 'Invalid Input');
+      err.status = 400;
+      err.data = null;
+      throw err;
+    }
+
     const { email, password } = req.body;
 
     // Check if email already exist in db
