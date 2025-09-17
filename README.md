@@ -1,6 +1,6 @@
 # BLOG SERVER
 
-This project was mainly for learning. I was learning this through youtube video by [Prawito Hudoro](https://www.youtube.com/@prawitohudoro/videos) 3 years ago. Check his channel through this [link](https://www.youtube.com/@prawitohudoro/videos), he is really good instructor. As times goes by, I finally have a time to update this repository. No fancy config such as eslint and prettier here, so you can understand it and beginner friendly.
+This project was mainly for learning. I learned Fullstack MERN through youtube video by [Prawito Hudoro](https://www.youtube.com/@prawitohudoro/videos) 3 years ago. Check his channel through this [link](https://www.youtube.com/@prawitohudoro/videos), he is really good instructor. As times goes by, I finally have a time to update this repository. No fancy config such as eslint and prettier here, so you can understand it and beginner friendly.
 
 ### Technology used
 
